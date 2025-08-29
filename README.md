@@ -1,6 +1,6 @@
-# FastPix Better Player Wrapper
+# FastPix Data Better Player
 
-A Flutter plugin that provides a wrapper around BetterPlayer with FastPix analytics integration for comprehensive video player metrics and tracking.
+A Flutter plugin that provides a wrapper around BetterPlayer plus with FastPix analytics integration for comprehensive video player metrics and tracking.
 
 ## Description
 
