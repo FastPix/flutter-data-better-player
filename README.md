@@ -53,7 +53,7 @@ No additional setup required. The plugin automatically handles iOS configuration
 ### Basic Implementation
 
 ```dart
-import 'package:fastpix_better_player_wrapper/fastpix_better_player_wrapper.dart';
+import 'package:fastpix_data_better_player/fastpix_data_better_player.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
