@@ -30,7 +30,7 @@ Add the following to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  fastpix_better_player_wrapper: ^0.1.0
+  fastpix_data_better_player: ^0.1.0
   better_player_plus: ^1.0.8
 ```
 
