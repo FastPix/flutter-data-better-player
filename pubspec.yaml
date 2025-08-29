@@ -1,4 +1,4 @@
-name: fastpix_better_player_wrapper
+name: fastpix_data_better_player
 description: "A Flutter plugin that provides a wrapper around BetterPlayer with FastPix analytics integration for video player metrics and tracking."
 version: 0.1.0
 homepage: https://www.fastpix.io/

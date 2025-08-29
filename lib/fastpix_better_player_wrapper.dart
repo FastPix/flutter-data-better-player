@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:better_player_plus/better_player_plus.dart';
-import 'package:fastpix_better_player_wrapper/valid_events.dart';
+import 'package:fastpix_data_better_player/valid_events.dart';
 import 'package:fastpix_flutter_core_data/fastpix_flutter_core_data.dart';
 import 'package:flutter/material.dart';
 
