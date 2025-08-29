@@ -165,7 +165,6 @@ _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
 ### Required Parameters
 
 - **`workspaceId`**: Your FastPix workspace identifier
-- **`beaconUrl`**: The analytics endpoint URL for data transmission
 - **`viewerId`**: Unique identifier for the current viewer/session
 
 ### Optional Parameters
@@ -219,7 +218,7 @@ Builder class for creating FastPix video player instances.
 FastPixBaseVideoPlayerBuilder({
   required BetterPlayerController playerController,
   required String workspaceId,
-  required String beaconUrl,
+  String beaconUrl,
   required String viewerId,
 })
 ```
@@ -292,12 +291,6 @@ We welcome contributions to improve the FastPix Better Player Wrapper! Here's ho
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-- **Documentation**: [GitHub Wiki](https://github.com/FastPix/fastpix-better-player-wrapper/wiki)
-- **Issues**: [GitHub Issues](https://github.com/FastPix/fastpix-better-player-wrapper/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/FastPix/fastpix-better-player-wrapper/discussions)
 
 ## Dependencies
 
