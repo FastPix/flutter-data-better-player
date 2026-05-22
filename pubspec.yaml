@@ -1,6 +1,6 @@
 name: fastpix_data_better_player
 description: "A Flutter plugin that provides a wrapper around BetterPlayer with FastPix analytics integration for video player metrics and tracking."
-version: 0.1.0
+version: 1.0.0
 homepage: https://www.fastpix.io/
 repository: https://github.com/FastPix/flutter-data-better-player
 issue_tracker: https://github.com/FastPix/flutter-data-better-player/issues
@@ -17,7 +17,7 @@ dependencies:
   web: ^1.0.0
   plugin_platform_interface: ^2.0.2
   better_player_plus: ^1.0.8
-  fastpix_flutter_core_data: ^1.0.2
+  fastpix_flutter_core_data: ^2.0.0
 
 dev_dependencies:
   flutter_test:
