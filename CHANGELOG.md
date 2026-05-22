@@ -5,6 +5,22 @@ All notable changes to the FastPix Better Player Wrapper project will be documen
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-05-22
+
+### Changed
+- **Dependency**: Bumped `fastpix_flutter_core_data` to `^2.0.0`.
+- **PlayerObserver Interface**: Refactored `FastPixBaseBetterPlayer` to implement the updated `PlayerObserver` interface.
+- **Custom Data API**: Replaced `List<CustomData>` with a single `CustomData` object. `setCustomData` now accepts a single `CustomData` instance instead of a list.
+- **State Transitions**: Updated state transition logic in `valid_events.dart` to support more robust player states.
+
+### Added
+- **Position Poller**: New position poller for finer-grained playback position tracking.
+- **10s Pulse Timer**: Periodic pulse timer for more reliable metric reporting during playback.
+- **Library Info**: Added `LibraryInfo` to track library metadata sent with analytics.
+
+### Fixed
+- **Android Plugin Registry**: Updated `GeneratedPluginRegistrant` to include `SqflitePlugin`.
+
 ## [0.1.0] - 2025-08-29
 
 ### Added

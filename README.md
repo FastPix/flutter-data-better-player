@@ -131,10 +131,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
 ```dart
 // Create custom data for analytics
-List<CustomData> customData = [
-  CustomData(value: "entertainment"),
-  CustomData(value: "action"),
-];
+CustomData customData = CustomData(value: "entertainment");
 
 // Initialize with advanced configuration
 _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
@@ -225,7 +222,7 @@ FastPixBaseVideoPlayerBuilder({
 
 **Methods:**
 - `setEnabledLogging(bool value)`: Enable/disable logging
-- `setCustomData(List<CustomData> value)`: Set custom analytics data
+- `setCustomData(CustomData value)`: Set custom analytics data
 - `setPlayerData(PlayerData? value)`: Set player metadata
 - `setVideoData(VideoData? value)`: Set video information
 - `build()`: Create the FastPix player instance
