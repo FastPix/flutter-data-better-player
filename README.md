@@ -32,6 +32,7 @@ Add the following to your `pubspec.yaml`:
 dependencies:
   fastpix_data_better_player: ^1.0.0
   better_player_plus: ^1.0.8
+  fastpix_flutter_core_data: ^2.0.0
 ```
 
 ### 2. Install Dependencies
@@ -43,9 +44,11 @@ flutter pub get
 ### 3. Platform Setup
 
 #### Android
+
 No additional setup required. The plugin automatically handles Android configuration.
 
 #### iOS
+
 No additional setup required. The plugin automatically handles iOS configuration.
 
 ## Usage
@@ -54,6 +57,7 @@ No additional setup required. The plugin automatically handles iOS configuration
 
 ```dart
 import 'package:fastpix_data_better_player/fastpix_data_better_player.dart';
+import 'package:fastpix_flutter_core_data/fastpix_flutter_core_data.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -84,17 +88,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
     );
 
-    // Initialize FastPix wrapper
+    // Initialize FastPix wrapper.
+    // beaconUrl is optional — omit it and the SDK derives the beacon from
+    // your workspaceId. viewerId MUST be a valid UUID (the beacon rejects
+    // non-UUID values with HTTP 400).
     _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
       playerController: _betterPlayerController,
       workspaceId: "your_workspace_id",
-      beaconUrl: "https://your-beacon-url.com",
-      viewerId: "unique_viewer_id",
+      viewerId: "b2c9a1e4-3d6f-4a8b-9c1d-2e5f7a0b3c4d",
     )
         .setVideoData(
           VideoData(
-            videoUrl: "https://example.com/video.mp4",
-            videoThumbnailUrl: "https://example.com/thumbnail.jpg",
+            videoSourceUrl: "https://example.com/video.mp4",
+            videoThumbnail: "https://example.com/thumbnail.jpg",
           ),
         )
         .setEnabledLogging(true)
@@ -130,28 +136,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 ### Advanced Configuration
 
 ```dart
-// Create custom data for analytics
-CustomData customData = CustomData(value: "entertainment");
+// Create custom data for analytics.
+// CustomData takes up to 10 positional fields (customField1..customField10);
+// pass null for the ones you don't need.
+CustomData customData = CustomData(
+  "entertainment", null, null, null, null, null, null, null, null, null,
+);
 
 // Initialize with advanced configuration
 _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
   playerController: _betterPlayerController,
   workspaceId: "your_workspace_id",
-  beaconUrl: "https://your-beacon-url.com",
-  viewerId: "unique_viewer_id",
+  viewerId: "b2c9a1e4-3d6f-4a8b-9c1d-2e5f7a0b3c4d", // must be a UUID
 )
     .setVideoData(
       VideoData(
-        videoUrl: "https://example.com/video.mp4",
-        videoThumbnailUrl: "https://example.com/thumbnail.jpg",
+        videoSourceUrl: "https://example.com/video.mp4",
+        videoThumbnail: "https://example.com/thumbnail.jpg",
       ),
     )
-    .setPlayerData(
-      PlayerData(
-        playerName: "better_player",
-        playerVersion: "x.x.x",
-      ),
-    )
+    // PlayerData takes positional args: (playerName, playerVersion)
+    .setPlayerData(PlayerData("better_player", "1.0.8"))
     .setCustomData(customData)
     .setEnabledLogging(true)
     .build();
@@ -162,7 +167,7 @@ _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
 ### Required Parameters
 
 - **`workspaceId`**: Your FastPix workspace identifier
-- **`viewerId`**: Unique identifier for the current viewer/session
+- **`viewerId`**: Unique identifier for the current viewer/session. Must be a valid UUID — the beacon rejects non-UUID values with HTTP 400.
 
 ### Optional Parameters
 
@@ -184,6 +189,7 @@ FASTPIX_BEACON_URL=https://your-beacon-url.com
 ### Advanced Features
 
 #### Audio Language Detection
+
 The plugin automatically detects and tracks audio language preferences from available audio tracks:
 
 ```dart
@@ -192,6 +198,7 @@ String audioLanguage = _fastPixPlayer.audioLanguage;
 ```
 
 #### Player Dimension Tracking
+
 Monitor player size changes in real-time:
 
 ```dart
@@ -200,6 +207,7 @@ _fastPixPlayer.reportPlayerSize(_playerKey);
 ```
 
 #### State Machine Validation
+
 The plugin implements a robust state machine that ensures only valid event transitions occur, preventing invalid analytics data and improving tracking accuracy.
 
 ## API / SDK Reference
@@ -211,16 +219,18 @@ The plugin implements a robust state machine that ensures only valid event trans
 Builder class for creating FastPix video player instances.
 
 **Constructor:**
+
 ```dart
 FastPixBaseVideoPlayerBuilder({
   required BetterPlayerController playerController,
   required String workspaceId,
-  String beaconUrl,
+  String? beaconUrl,
   required String viewerId,
 })
 ```
 
 **Methods:**
+
 - `setEnabledLogging(bool value)`: Enable/disable logging
 - `setCustomData(CustomData value)`: Set custom analytics data
 - `setPlayerData(PlayerData? value)`: Set player metadata
@@ -232,6 +242,7 @@ FastPixBaseVideoPlayerBuilder({
 Main wrapper class that handles analytics integration.
 
 **Methods:**
+
 - `start()`: Initialize and start analytics tracking
 - `disposeMetrix()`: Clean up analytics resources and player controller
 - `reportPlayerSize(GlobalKey key)`: Report player dimensions for analytics
@@ -292,6 +303,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Dependencies
 
 This plugin requires the following dependencies:
+
 - **Flutter**: >=3.3.0
 - **Dart SDK**: ^3.7.2
 - **better_player_plus**: ^1.0.8
