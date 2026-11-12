@@ -1,6 +1,42 @@
-# FastPix Data Better Player
+# FastPix Video Data SDK for BetterPlayer (Flutter) - QoE analytics and video monitoring
 
-A Flutter plugin that provides a wrapper around BetterPlayer plus with FastPix analytics integration for comprehensive video player metrics and tracking.
+[![Pub Version](https://img.shields.io/pub/v/fastpix_data_better_player)](https://pub.dev/packages/fastpix_data_better_player)
+[![Pub Likes](https://img.shields.io/pub/likes/fastpix_data_better_player)](https://pub.dev/packages/fastpix_data_better_player)
+[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-0CB16D)](https://pub.dev/packages/fastpix_data_better_player)
+[![License: Apache 2.0](https://img.shields.io/github/license/FastPix/flutter-data-better-player)](./LICENSE)
+
+The **FastPix Video Data SDK for BetterPlayer** is a Flutter plugin that adds real-time Quality of Experience (QoE) analytics to the [BetterPlayer (`better_player_plus`)](https://pub.dev/packages/better_player_plus) video player. It is the automated, out-of-the-box wrapper: it hooks into BetterPlayer's playback behaviour and automatically tracks startup time, rebuffering, bitrate and resolution shifts, seeking, errors and viewer engagement, and reports them to the FastPix dashboard - with no custom event-tracking code to write.
+
+It is a **Video Data (analytics) SDK, not a video player**. It wraps BetterPlayer to measure playback quality and engagement; it does not replace the player. Reach for it when you already play video with BetterPlayer in a Flutter app and want QoE monitoring without building a data pipeline yourself. For the full list of metrics, see [Monitor Better Player (Flutter)](https://fastpix.com/docs/video-data/monitors/better-player).
+
+**Works with:** Flutter (Android and iOS) · BetterPlayer (`better_player_plus`) · the FastPix Video Data dashboard
+
+[Documentation](https://fastpix.com/docs/video-data/monitors/better-player) · [Create a free account](https://dashboard.fastpix.com/signup?utm_source=github&utm_medium=referral&utm_campaign=github_signup)
+
+## Start here
+
+New to the SDK? Work through these in order:
+
+1. [Before you start](#before-you-start) - create a workspace and get your workspace ID
+2. [Install the SDK](#installation)
+3. [Add analytics to your BetterPlayer (basic)](#basic-implementation)
+4. [Attach video, player and custom metadata](#advanced-configuration)
+5. [Configuration parameters](#configuration)
+6. [What it tracks](#event-tracking)
+7. [FAQ](#faq)
+
+## Why FastPix
+
+- **No event-tracking code to write.** A builder wraps your existing `BetterPlayerController` and hooks the playback events for you - the "automated wrapper" path, not a hand-rolled event listener.
+- **Deep QoE out of the box.** Startup time, rebuffering, bitrate and resolution shifts, stalls, seeking and playback errors, reported in near real time.
+- **BetterPlayer stays intact.** The full `better_player_plus` API keeps working; the wrapper only observes it.
+- **One dashboard.** Metrics land in your FastPix workspace for viewer-engagement and quality-of-experience monitoring.
+
+## Who it's for
+
+- **OTT and streaming apps on BetterPlayer:** monitor QoE (startup, rebuffering, errors) across your catalogue.
+- **Online learning and courses:** measure completion, watch time and engagement per lesson.
+- **Any Flutter app that plays video with BetterPlayer:** add analytics without replacing your player or writing tracking code.
 
 ## Description
 
@@ -22,6 +58,14 @@ The FastPix Better Player Wrapper is a powerful Flutter plugin that seamlessly i
 - **State Management**: Comprehensive player state tracking with valid event transitions
 - **Memory Management**: Proper resource cleanup and disposal methods
 
+## Before you start
+
+This SDK reports analytics to a FastPix workspace, so you need an account and a workspace ID. You also need a Flutter app that already plays video with BetterPlayer (`better_player_plus`).
+
+- **Create a free account** and sign in to the [FastPix Dashboard](https://dashboard.fastpix.com/signup?utm_source=github&utm_medium=referral&utm_campaign=github_signup).
+- **Set up a workspace** and copy your workspace ID - see [set up a workspace](https://fastpix.com/docs/getting-started/set-up-a-workspace).
+- **Already playing video with BetterPlayer?** If not, add [`better_player_plus`](https://pub.dev/packages/better_player_plus) first - this SDK wraps it, it does not replace it.
+
 ## Installation
 
 ### 1. Add Dependency
@@ -32,7 +76,6 @@ Add the following to your `pubspec.yaml`:
 dependencies:
   fastpix_data_better_player: ^1.0.0
   better_player_plus: ^1.0.8
-  fastpix_flutter_core_data: ^2.0.0
 ```
 
 ### 2. Install Dependencies
@@ -44,11 +87,9 @@ flutter pub get
 ### 3. Platform Setup
 
 #### Android
-
 No additional setup required. The plugin automatically handles Android configuration.
 
 #### iOS
-
 No additional setup required. The plugin automatically handles iOS configuration.
 
 ## Usage
@@ -57,7 +98,6 @@ No additional setup required. The plugin automatically handles iOS configuration
 
 ```dart
 import 'package:fastpix_data_better_player/fastpix_data_better_player.dart';
-import 'package:fastpix_flutter_core_data/fastpix_flutter_core_data.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -88,19 +128,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
     );
 
-    // Initialize FastPix wrapper.
-    // beaconUrl is optional — omit it and the SDK derives the beacon from
-    // your workspaceId. viewerId MUST be a valid UUID (the beacon rejects
-    // non-UUID values with HTTP 400).
+    // Initialize FastPix wrapper
     _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
       playerController: _betterPlayerController,
       workspaceId: "your_workspace_id",
-      viewerId: "b2c9a1e4-3d6f-4a8b-9c1d-2e5f7a0b3c4d",
+      beaconUrl: "https://your-beacon-url.com",
+      viewerId: "unique_viewer_id",
     )
         .setVideoData(
           VideoData(
-            videoSourceUrl: "https://example.com/video.mp4",
-            videoThumbnail: "https://example.com/thumbnail.jpg",
+            videoUrl: "https://example.com/video.mp4",
+            videoThumbnailUrl: "https://example.com/thumbnail.jpg",
           ),
         )
         .setEnabledLogging(true)
@@ -136,27 +174,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 ### Advanced Configuration
 
 ```dart
-// Create custom data for analytics.
-// CustomData takes up to 10 positional fields (customField1..customField10);
-// pass null for the ones you don't need.
-CustomData customData = CustomData(
-  "entertainment", null, null, null, null, null, null, null, null, null,
-);
+// Create custom data for analytics
+CustomData customData = CustomData(value: "entertainment");
 
 // Initialize with advanced configuration
 _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
   playerController: _betterPlayerController,
   workspaceId: "your_workspace_id",
-  viewerId: "b2c9a1e4-3d6f-4a8b-9c1d-2e5f7a0b3c4d", // must be a UUID
+  beaconUrl: "https://your-beacon-url.com",
+  viewerId: "unique_viewer_id",
 )
     .setVideoData(
       VideoData(
-        videoSourceUrl: "https://example.com/video.mp4",
-        videoThumbnail: "https://example.com/thumbnail.jpg",
+        videoUrl: "https://example.com/video.mp4",
+        videoThumbnailUrl: "https://example.com/thumbnail.jpg",
       ),
     )
-    // PlayerData takes positional args: (playerName, playerVersion)
-    .setPlayerData(PlayerData("better_player", "1.0.8"))
+    .setPlayerData(
+      PlayerData(
+        playerName: "better_player",
+        playerVersion: "x.x.x",
+      ),
+    )
     .setCustomData(customData)
     .setEnabledLogging(true)
     .build();
@@ -167,7 +206,7 @@ _fastPixPlayer = FastPixBaseVideoPlayerBuilder(
 ### Required Parameters
 
 - **`workspaceId`**: Your FastPix workspace identifier
-- **`viewerId`**: Unique identifier for the current viewer/session. Must be a valid UUID — the beacon rejects non-UUID values with HTTP 400.
+- **`viewerId`**: Unique identifier for the current viewer/session
 
 ### Optional Parameters
 
@@ -189,7 +228,6 @@ FASTPIX_BEACON_URL=https://your-beacon-url.com
 ### Advanced Features
 
 #### Audio Language Detection
-
 The plugin automatically detects and tracks audio language preferences from available audio tracks:
 
 ```dart
@@ -198,7 +236,6 @@ String audioLanguage = _fastPixPlayer.audioLanguage;
 ```
 
 #### Player Dimension Tracking
-
 Monitor player size changes in real-time:
 
 ```dart
@@ -207,7 +244,6 @@ _fastPixPlayer.reportPlayerSize(_playerKey);
 ```
 
 #### State Machine Validation
-
 The plugin implements a robust state machine that ensures only valid event transitions occur, preventing invalid analytics data and improving tracking accuracy.
 
 ## API / SDK Reference
@@ -219,18 +255,16 @@ The plugin implements a robust state machine that ensures only valid event trans
 Builder class for creating FastPix video player instances.
 
 **Constructor:**
-
 ```dart
 FastPixBaseVideoPlayerBuilder({
   required BetterPlayerController playerController,
   required String workspaceId,
-  String? beaconUrl,
+  String beaconUrl,
   required String viewerId,
 })
 ```
 
 **Methods:**
-
 - `setEnabledLogging(bool value)`: Enable/disable logging
 - `setCustomData(CustomData value)`: Set custom analytics data
 - `setPlayerData(PlayerData? value)`: Set player metadata
@@ -242,7 +276,6 @@ FastPixBaseVideoPlayerBuilder({
 Main wrapper class that handles analytics integration.
 
 **Methods:**
-
 - `start()`: Initialize and start analytics tracking
 - `disposeMetrix()`: Clean up analytics resources and player controller
 - `reportPlayerSize(GlobalKey key)`: Report player dimensions for analytics
@@ -264,6 +297,44 @@ The wrapper automatically tracks the following player events with valid state tr
 - **Error**: When playback errors occur
 
 The plugin implements a state machine that ensures only valid event transitions occur, preventing invalid analytics data and improving tracking accuracy.
+
+## Which FastPix SDK for Flutter
+
+This repository is the **BetterPlayer analytics** integration. For the other parts of a FastPix Flutter app, use the matching SDK:
+
+| What you want to do | FastPix SDK |
+| --- | --- |
+| Add QoE analytics to a BetterPlayer video | **fastpix_data_better_player** (this repository) |
+| Core Flutter video analytics (the engine this builds on) | [FastPix/flutter-core-data-sdk](https://github.com/FastPix/flutter-core-data-sdk) (`fastpix_flutter_core_data`) |
+| Play FastPix HLS video in Flutter | [FastPix/Flutter-Video-Player](https://github.com/FastPix/Flutter-Video-Player) (`fastpix_video_player`) |
+| Upload video from a Flutter app | [FastPix/flutter-uploads](https://github.com/FastPix/flutter-uploads) |
+
+## FAQ
+
+**How do I add video analytics to BetterPlayer in Flutter?**
+Add `fastpix_data_better_player`, wrap your existing `BetterPlayerController` with `FastPixBaseVideoPlayerBuilder(...).build()`, and call `start()`. The wrapper hooks BetterPlayer's events and reports QoE metrics automatically. See [Add analytics (basic)](#basic-implementation).
+
+**What video quality-of-experience (QoE) metrics does it track?**
+Startup time, rebuffering and buffering, bitrate and resolution shifts, seeking, playback errors, and view completion, plus engagement signals. See [What it tracks](#event-tracking) and [Monitor Better Player (Flutter)](https://fastpix.com/docs/video-data/monitors/better-player).
+
+**Is this a video player?**
+No. It is a Video Data (analytics) SDK that wraps the BetterPlayer (`better_player_plus`) player. You keep using BetterPlayer for playback; this SDK only measures it.
+
+**Do I have to rewrite my event tracking?**
+No. This is the automated-wrapper approach - the builder hooks the playback events for you, so you do not write a custom `addEventsListener` mapping layer.
+
+**Does it work on Android and iOS?**
+Yes, both.
+
+**How do I attach video title, player and custom metadata?**
+Use `setVideoData(...)`, `setPlayerData(...)` and `setCustomData(...)` on the builder. See [Attach metadata](#advanced-configuration).
+
+**Is it an alternative to rolling my own Firebase/Mixpanel video tracking?**
+Yes - it gives you deep, video-specific QoE (bitrate, stalls, startup latency) out of the box, instead of manually logging `video_play` / `video_pause` events to a general analytics backend.
+
+## Documentation
+
+ [Monitor Better Player (Flutter) - FastPix docs](https://fastpix.com/docs/video-data/monitors/better-player) for the full metric list and setup guide, and the [FastPix Video Data overview](https://fastpix.com/docs/video-data/overview).
 
 ## Contributing
 
@@ -303,7 +374,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Dependencies
 
 This plugin requires the following dependencies:
-
 - **Flutter**: >=3.3.0
 - **Dart SDK**: ^3.7.2
 - **better_player_plus**: ^1.0.8
